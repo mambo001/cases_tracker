@@ -1224,15 +1224,14 @@ function showFAB(){
                                                 value="BLS2"
                                                 ${JSON.parse(localStorage.settings).bls_mode ? "selected" : ''}
                                             >BLS2</option>
-                                            <option class="toggleable" value="AdsLab">Ads Lab</option>
-                                            <option class="toggleable" value="Hats">Hats</option>
-                                            <option class="toggleable" value="API-Internal">API-Internal</option>
-                                            <option class="toggleable" value="API-External">API-External</option>
                                             <option class="toggleable" value="External">External</option>
+                                            <option class="toggleable" value="Surveys360">Surveys360</option>
+                                            <option class="toggleable" value="API-External(Surveys360)">API-External(Surveys360)</option>
+                                            <option class="toggleable" value="API-Internal">API-Internal</option>
+                                            <option class="toggleable" value="AdsLab">AdsLab</option>
                                             <option class="toggleable" value="Crust">Crust</option>
                                             <option class="toggleable" value="Googler">Googler</option>
-                                            <option class="toggleable" value="Websat">Websat</option>
-                                            <option class="toggleable" value="Surveys360">Surveys360</option>
+                                            <option class="toggleable" value="Hats">Hats</option>
                                         </select>
                                         <div id="targeting-chips" class="hide chips chips-initial chips-autocomplete" style="margin-top: 5px;">
                                             
