@@ -106,6 +106,7 @@ function init(){
           darkModeSwitch = document.querySelector('#darkModeSwitch'),
           cardNav = document.querySelector('#card-nav'),
           targetingCategories = document.querySelector('#targeting-categories'),
+          targetingDropdown = document.querySelector('#targeting-dropdown'),
           rmto = document.querySelector('#rmto'),
           blsChecker = document.querySelector('#blsChecker'),
           caseTemplateBtn = document.querySelector('#caseTemplateBtn'),
@@ -1236,6 +1237,19 @@ function showFAB(){
                                         <div id="targeting-chips" class="hide chips chips-initial chips-autocomplete" style="margin-top: 5px;">
                                             
                                         </div>
+                                    </div>
+
+                                    <div id="" class="col s12 toggleable">
+                                        <label class="active" for="targeting-dropdown">Targeting</label>
+                                        <select class="browser-default" id="targeting-dropdown">
+                                            <option value="" disabled selected="selected">Select Targeting</option>
+                                            <option class="toggleable" value="PubNet">PubNet</option>
+                                            <option class="toggleable" value="AdMob">AdMob</option>
+                                            <option class="toggleable" value="RMK">RMK</option>
+                                            <option class="toggleable" value="Zip">Zip</option>
+                                            <option class="toggleable" value="DMANielsen">DMANielsen</option>
+                                            <option class="toggleable" value="WebSat">WebSat</option>
+                                        </select>
                                     </div>
                                     
                                     <div class="col s6">
@@ -4286,6 +4300,7 @@ function surveyReviewQueue(){
   const customerTypeSelect = document.querySelector('#customer-type'),
       countrySelect = document.querySelector('#country-select'),
       surveyTypeSelect  = document.querySelector('#targeting-categories'),
+      targetingDropdown  = document.querySelector('#targeting-dropdown'),
       rmto = document.querySelector('#rmto');
       queueSelect = document.querySelector('#queue-select')
       
@@ -4297,6 +4312,7 @@ function surveyReviewQueue(){
   if (!blsModeValue){
       console.log({blsModeValue})
       numberOfQuestions.parentElement.classList.contains('hide') ? numberOfQuestions.parentElement.classList.remove("hide") : "";
+      targetingDropdown.parentElement.classList.remove('hide') ? targetingDropdown.parentElement.classList.remove("hide") : "";
       // timesReviewed.parentElement.classList.contains('hide') ? timesReviewed.parentElement.classList.remove("hide") : "";
       countrySelect.parentElement.classList.contains('hide') ? countrySelect.parentElement.classList.remove('hide') : "";
   } else {
@@ -4307,6 +4323,7 @@ function surveyReviewQueue(){
   // queueSelect.parentElement.classList.add('s8');
   
 //   countrySelect.parentElement.classList.remove('hide');
+  
   surveyTypeSelect.parentElement.classList.remove('hide');
   // rmto.parentElement.classList.remove('hide');
   customerTypeSelect.parentElement.classList.add('hide');
@@ -4340,6 +4357,7 @@ function nonTransactionQueue(){
       blsChecker = document.querySelector('#blsChecker'),
       caseTemplateBtn = document.querySelector('#caseTemplateBtn'),
       targetingCategories = document.querySelector('#targeting-categories'),
+      targetingDropdown = document.querySelector('#targeting-dropdown'),
       
       numberOfQuestions = document.querySelector('#numberOfQuestions'),
       timesReviewed = document.querySelector('#timesReviewed');
@@ -4354,6 +4372,8 @@ function nonTransactionQueue(){
   
   // hide targeting categories on Support queue
   targetingCategories.parentElement.classList.add('hide');
+  targetingDropdown.parentElement.classList.add('hide');
+
   backBtn.classList.add('hide');
   blsChecker.parentElement.classList.add('hide');
   caseTemplateBtn.parentElement.classList.add('hide');
@@ -4385,6 +4405,7 @@ function supportQueue(){
       blsChecker = document.querySelector('#blsChecker'),
       caseTemplateBtn = document.querySelector('#caseTemplateBtn'),
       targetingCategories = document.querySelector('#targeting-categories'),
+      targetingDropdown = document.querySelector('#targeting-dropdown'),
       
       gridCountry = document.querySelector('#grid-country'),
       numberOfQuestions = document.querySelector('#numberOfQuestions'),
@@ -4399,6 +4420,7 @@ function supportQueue(){
   
   // hide targeting categories on Support queue
   targetingCategories.parentElement.classList.add('hide');
+  targetingDropdown.parentElement.classList.add('hide');
   backBtn.classList.add('hide');
   blsChecker.parentElement.classList.add('hide');
   caseTemplateBtn.parentElement.classList.add('hide');
@@ -4429,6 +4451,7 @@ function publisherQueue(){
   // Toggle elements
   const customerTypeSelect = document.querySelector('#customer-type'),
       surveyTypeSelect = document.querySelector('#targeting-categories'),
+      targetingDropdown = document.querySelector('#targeting-dropdown'),
       countryInput = document.querySelector('#countryInput'),
       languageInput = document.querySelector('#languageInput'),
       queueSelect = document.querySelector('#queue-select'),
@@ -4439,6 +4462,7 @@ function publisherQueue(){
       //hide number of times reviewed and number of questions
       numberOfQuestions.parentElement.classList.add('hide');
       timesReviewed.parentElement.classList.add('hide');
+
       
       
       // fix rmto overflowing
@@ -4446,6 +4470,7 @@ function publisherQueue(){
 
       customerTypeSelect.parentElement.classList.add('hide');
       surveyTypeSelect.parentElement.classList.add('hide');
+      targetingDropdown.parentElement.classList.add('hide');
       countryInput.parentElement.classList.add('hide');
       languageInput.parentElement.classList.add('hide');
       
@@ -4469,6 +4494,7 @@ function publisherNewQueue(){
   const customerTypeSelect = document.querySelector('#customer-type'),
     //   surveyStatusSelect = document.querySelector('#surveystatus-select'),
       surveyTypeSelect = document.querySelector('#targeting-categories'),
+      targetingDropdown = document.querySelector('#targeting-dropdown'),
       countryInput = document.querySelector('#countryInput'),
       languageInput = document.querySelector('#languageInput'),
       queueSelect = document.querySelector('#queue-select'),
@@ -4481,12 +4507,14 @@ function publisherNewQueue(){
       timesReviewed.parentElement.classList.add('hide');
       
       
+      
       // fix rmto overflowing
       // queueSelect.parentElement.classList.toggle("s8");
 
       customerTypeSelect.parentElement.classList.add('hide');
     //   surveyStatusSelect.parentElement.classList.add('hide');
       surveyTypeSelect.parentElement.classList.add('hide');
+      targetingDropdown.parentElement.classList.add('hide');
       countryInput.parentElement.classList.add('hide');
       languageInput.parentElement.classList.add('hide');
       
@@ -4510,6 +4538,7 @@ function publisherSupportQueue(){
   const customerTypeSelect = document.querySelector('#customer-type'),
     //   surveyStatusSelect = document.querySelector('#surveystatus-select'),
       surveyTypeSelect = document.querySelector('#targeting-categories'),
+      targetingDropdown = document.querySelector('#targeting-dropdown'),
       countryInput = document.querySelector('#countryInput'),
       languageInput = document.querySelector('#languageInput'),
       queueSelect = document.querySelector('#queue-select'),
@@ -4529,6 +4558,7 @@ function publisherSupportQueue(){
       customerTypeSelect.parentElement.classList.add('hide');
     //   surveyStatusSelect.parentElement.classList.add('hide');
       surveyTypeSelect.parentElement.classList.add('hide');
+      targetingDropdown.parentElement.classList.add('hide');
       countryInput.parentElement.classList.add('hide');
       languageInput.parentElement.classList.add('hide');
       
@@ -4553,6 +4583,7 @@ function partnershipQueue(){
     
       countryInput = document.querySelector('#countryInput'),
       surveyTypeSelect  = document.querySelector('#targeting-categories'),
+      targetingDropdown = document.querySelector('#targeting-dropdown'),
       languageInput = document.querySelector('#languageInput'),
       
       numberOfQuestions = document.querySelector('#numberOfQuestions'),
@@ -4567,6 +4598,7 @@ function partnershipQueue(){
 
   customerTypeSelect.parentElement.classList.add('hide');
   surveyTypeSelect.parentElement.classList.add('hide');
+  targetingDropdown.parentElement.classList.add('hide');
   countryInput.parentElement.classList.add('hide');
   languageInput.parentElement.classList.add('hide');
   
@@ -4772,6 +4804,7 @@ function initDarkMode(){
       countryInput = document.querySelector('#countryInput'),
       screenshotText = document.querySelector('#screenshot-text'),
       targetingCategories = document.querySelector('#targeting-categories'),
+      targetingDropdown = document.querySelector('#targeting-dropdown'),
       queueSelectCategories = document.querySelector('#queue-select');
 
   darkModeSwitch.toggleAttribute("checked");
@@ -4785,6 +4818,7 @@ function initDarkMode(){
     
 // select * options background, text color
 targetingCategories.classList.toggle("d-mode-options");
+targetingDropdown.classList.toggle("d-mode-options");
 queueSelectCategories.classList.toggle("d-mode-options");
     
   nimodal.classList.toggle('card-d-mode');
@@ -4912,6 +4946,7 @@ function initBLSMode(){
       languageInput = document.querySelector('#languageInput'),
       queueSelect = document.querySelector('#queue-select'),
       targetingCategories = document.querySelector('#targeting-categories'),
+      targetingDropdown = document.querySelector('#targeting-dropdown'),
       blsSwitch = document.querySelector('#blsModeSwitch > label > input[type=checkbox]'),
       rmto = document.querySelector('#rmto'),
       viewMV = document.querySelector('#viewMV'),
@@ -4929,6 +4964,7 @@ function initBLSMode(){
 // countryInput.parentElement.classList.toggle('hide');
 //   numberOfQuestions.parentElement.classList.toggle('hide');
 //   timesReviewed.parentElement.classList.toggle('hide');
+targetingDropdown.classList.toggle('hide');
   
   numberOfQuestions.parentElement.classList.contains('hide') ? numberOfQuestions.parentElement.classList.remove('hide') : numberOfQuestions.parentElement.classList.add('hide');
   timesReviewed.parentElement.classList.contains('s12') ? timesReviewed.parentElement.classList.add('s6') : timesReviewed.parentElement.classList.add('s12');
@@ -5410,6 +5446,7 @@ let queueSelect = document.querySelector('#queue-select'),
     languageInput = document.querySelector('#languageInput'),
     rmto = document.querySelector('#rmto'),
     targetingCategories = document.querySelector('#targeting-categories'),
+    targetingDropdown = document.querySelector('#targeting-dropdown'),
     screenshotText = document.querySelector('#screenshot-text'),
     numberOfQuestionsSelect = document.querySelector('#numberOfQuestions'),
     timesReviewedSelect = document.querySelector('#timesReviewed');
@@ -5423,6 +5460,7 @@ const blsModeValue = JSON.parse(localStorage.settings).bls_mode;
 //new error handler
 checkValidSelect(targetingCategories);
 checkValidSelect(languageInput);
+blsModeValue ? "" : checkValidSelect(targetingDropdown);
 blsModeValue ? "" : checkValidSelect(countryInput);
 blsModeValue ? "" : checkValidSelect(numberOfQuestionsSelect);
 blsModeValue ? checkValidSelect(timesReviewedSelect) : "";
@@ -5434,6 +5472,7 @@ let caseData = {
     language: languageInput.dataset.langcode,
     RMTO: rmto.checked? "yes" : "no",
     surveyType: targetingCategories.value,
+    targeting: targetingDropdown.value,
     numberOfQuestions: numberOfQuestionsSelect.options[numberOfQuestionsSelect.selectedIndex].value,
     timesReviewed: timesReviewedSelect.options[timesReviewedSelect.selectedIndex].value,
     screenshotText: screenshotText.value
@@ -5664,6 +5703,7 @@ function clearCardValues(){
     //   surveyStatusSelect = document.querySelector('#surveystatus-select'),
       screenshotText = document.querySelector('#screenshot-text'),
       targetingCategories = document.querySelector('#targeting-categories'),
+      targetingDropdown = document.querySelector('#targeting-dropdown'),
       numberOfQuestions = document.querySelector('#numberOfQuestions'),
       timesReviewed = document.querySelector('#timesReviewed'),
       searchWrappers = Array.from(document.querySelectorAll('.inputWrapper')),
@@ -5674,6 +5714,7 @@ function clearCardValues(){
   numberOfQuestions.selectedIndex = 0,
   timesReviewed.selectedIndex = 0,
   targetingCategories.selectedIndex = 0,
+  targetingDropdown.selectedIndex = 0,
   queueSelect.selectedIndex = 5,
   countryInput.value = "",
   countryInput.dataset.langcode = "",
@@ -5709,6 +5750,7 @@ function preFinish(){
   assigned["country"] = data.country;
   assigned["language"] = data.language;
   assigned["surveyType"] = data.surveyType;
+  assigned["targeting"] = data.targeting;
   assigned["RMTO"] = data.RMTO;
   assigned["surveyStatus"] = data.surveyStatus;
   assigned["screenshotText"] = data.screenshotText;
@@ -5788,6 +5830,7 @@ function getCaseData(){
         country = `${assigned.country}`,
         RMTO = `${assigned.RMTO}`,
         surveyType = `${assigned.surveyType}`,
+        targeting = `${assigned.targeting}`,
         screenshot = `${assigned.screenshotText}`,
         surveyDecision = `${assigned.queue == "Support" ? "" : assigned.decision}`,
         startTimeMNL = `${assigned.start_time}`,
@@ -5810,6 +5853,7 @@ function getCaseData(){
         country,
         RMTO,
         surveyType,
+        targeting,
         screenshot,
         surveyDecision,
         startTimeMNL,
