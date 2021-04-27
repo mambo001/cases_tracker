@@ -1,0 +1,70 @@
+{
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAieWTXiunV6NfFBnO8yapLmxhSm51EEi0rDWrelbfOJPlKDunpE0cacXWOIfU2zSMc9r5qFaWXQ03tleuAovd+4JvzEMeidniGcDkRDd2dt/geekISjJqJd7SOG5Ktol956WbfMF1RJMtFICCHT20RbgkV6yBeGvZzo4+iptSNFp3xDEUKpCd0ek9hoWgXr5kp8xfOcP4z+tZSHhSAaB9rf1Q4fkIBobZ0D0cFWIzU0sSb18aA8TCYW1AYWtgD+XXOcE8yIT8wJFgtgQhcnU4VbZnLs/9e+Ko3mYfZADqrb3C3Ddt7tVpW0WSiLXbtq5c9igA7wp0KpvgsC3wZB9NfwIDAQAB",
+    "manifest_version": 2,
+    "name": "Cases Tracker",
+    "description": "Chrome Extension to track cases.",
+    "version": "4.8",
+    "icons": {"128": "images/icon_128.png"},
+    "browser_action": {
+        "default_icon": "images/icon.png",
+        "default_popup": "popup.html"
+    },
+
+    "options_page": "options.html",
+    
+    "permissions": [
+      "activeTab",
+      "storage",
+      "https://script.google.com",
+      "https://*.google.com/"
+    ],
+    
+    "content_scripts": [
+        {
+          "matches": [
+            "https://redbull.corp.google.com/*",
+            "https://cases-testing.connect.corp.google.com/*",
+            "https://cases-testing.connect-canary.corp.google.com/*",
+            "https://support.google.com/s/community/*",
+            "https://cases.connect.corp.google.com/*"
+          ],
+          "css": [
+            "css/vendor/material_icons.css",
+            "css/vendor/materialize.min.css",
+            "css/vendor/sweetalert2.min.css",
+            "css/main.css"
+          ],
+          "js": [
+            "./js/vendor/jquery-3.3.1.min.js",
+            "./js/vendor/materialize.min.js",
+            "./js/vendor/sweetalert2.min.js",
+            "./js/content_script.js"
+          ]
+        }
+     ],
+      
+    "web_accessible_resources": [
+      "https://fonts.gstatic.com/s/materialicons/v42/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2",
+      "js/vendor/*",
+      "css/*"
+    ],
+    "background": {
+      "scripts": [
+        "./js/background.js",
+        "./js/vendor/jquery-3.3.1.min.js",
+        "./js/popup.js",
+        "./hot-reload.js"
+      ],
+      "persistent": false
+    },
+    
+   "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "MacCtrl+Shift+F"
+      },
+      "description": "Opens popup.html"
+      }
+    }
+}
