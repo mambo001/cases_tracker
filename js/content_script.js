@@ -1249,6 +1249,7 @@ function showFAB(){
                                             <option class="toggleable" value="Zip">Zip</option>
                                             <option class="toggleable" value="DMANielsen">DMANielsen</option>
                                             <option class="toggleable" value="WebSat">WebSat</option>
+                                            <option class="toggleable" value="GOR">GOR</option>
                                         </select>
                                     </div>
                                     
