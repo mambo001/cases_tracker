@@ -4352,7 +4352,7 @@ function surveyReviewQueue(){
       console.log({blsModeValue})
       numberOfQuestions.parentElement.classList.contains('hide') ? numberOfQuestions.parentElement.classList.remove("hide") : "";
       targetingDropdown.parentElement.classList.remove('hide') ? targetingDropdown.parentElement.classList.remove("hide") : "";
-      // timesReviewed.parentElement.classList.contains('hide') ? timesReviewed.parentElement.classList.remove("hide") : "";
+      timesReviewed.parentElement.classList.contains('hide') ? timesReviewed.parentElement.classList.remove("hide") : "";
     //   countrySelect.parentElement.classList.contains('hide') ? countrySelect.parentElement.classList.remove('hide') : "";
     //   !languageInput.parentElement.classList.contains('hide') ? languageInput.parentElement.classList.add('hide') : "";
   } else {
