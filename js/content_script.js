@@ -1236,7 +1236,7 @@ function showFAB(){
                                     </div>
                                     
 
-                                    <div class="input-field col s12" id="grid-country">
+                                    <div class="input-field col s12 hide" id="grid-country">
                                         <label class="active">Country</label>
                                         <select class="browser-default hide" id="country-select">
                                             <option value="" disabled selected="selected">Select One</option>
@@ -1244,7 +1244,7 @@ function showFAB(){
                                         <input type="text" id="countryInput" class="autocomplete" autocomplete="new-password" placeholder="United States">
                                     </div>
 
-                                    <div class="input-field col s12" id="grid-language">
+                                    <div class="input-field col s12 hide" id="grid-language">
                                         <label class="active">Language</label>
                                         <select class="browser-default hide" id="lang-select">
                                             <option value="" disabled selected="selected">Select One</option>
@@ -1258,6 +1258,7 @@ function showFAB(){
                                         <select class="browser-default" id="targeting-categories">
                                             <option value="" disabled selected="selected">Network Type</option>
                                             <option 
+                                                class="${JSON.parse(localStorage.settings).bls_mode ? "" : "hide"}"
                                                 value="BLS2"
                                                 ${JSON.parse(localStorage.settings).bls_mode ? "selected" : ''}
                                             >BLS2</option>
@@ -4336,6 +4337,7 @@ function surveyReviewQueue(){
   const blsModeValue = JSON.parse(localStorage.settings).bls_mode;
   const customerTypeSelect = document.querySelector('#customer-type'),
       countrySelect = document.querySelector('#country-select'),
+      languageInput = document.querySelector('#languageInput'),
       surveyTypeSelect  = document.querySelector('#targeting-categories'),
       targetingDropdown  = document.querySelector('#targeting-dropdown'),
       rmto = document.querySelector('#rmto');
@@ -4351,7 +4353,8 @@ function surveyReviewQueue(){
       numberOfQuestions.parentElement.classList.contains('hide') ? numberOfQuestions.parentElement.classList.remove("hide") : "";
       targetingDropdown.parentElement.classList.remove('hide') ? targetingDropdown.parentElement.classList.remove("hide") : "";
       // timesReviewed.parentElement.classList.contains('hide') ? timesReviewed.parentElement.classList.remove("hide") : "";
-      countrySelect.parentElement.classList.contains('hide') ? countrySelect.parentElement.classList.remove('hide') : "";
+    //   countrySelect.parentElement.classList.contains('hide') ? countrySelect.parentElement.classList.remove('hide') : "";
+    //   !languageInput.parentElement.classList.contains('hide') ? languageInput.parentElement.classList.add('hide') : "";
   } else {
       console.log(`bls mode value is: ${blsModeValue}`)
   }
@@ -4453,7 +4456,7 @@ function supportQueue(){
 //   queueSelect.parentElement.classList.toggle("s12");
 
   //hide country
-  gridCountry.classList.contains('hide') ? gridCountry.classList.remove('hide') : "";
+//   gridCountry.classList.contains('hide') ? gridCountry.classList.remove('hide') : "";
   
   // hide targeting categories on Support queue
   targetingCategories.parentElement.classList.add('hide');
@@ -5005,7 +5008,7 @@ targetingDropdown.classList.toggle('hide');
   
   numberOfQuestions.parentElement.classList.contains('hide') ? numberOfQuestions.parentElement.classList.remove('hide') : numberOfQuestions.parentElement.classList.add('hide');
   timesReviewed.parentElement.classList.contains('s12') ? timesReviewed.parentElement.classList.add('s6') : timesReviewed.parentElement.classList.add('s12');
-  countryInput.parentElement.classList.contains('hide') ? countryInput.parentElement.classList.remove('hide') : countryInput.parentElement.classList.add('hide');
+  languageInput.parentElement.classList.contains('hide') ? languageInput.parentElement.classList.remove('hide') : languageInput.parentElement.classList.add('hide');
   
   viewMV.parentElement.classList.toggle('hide');
   Array.from(document.querySelectorAll('.toggleable')).forEach((e) => {
@@ -5496,19 +5499,21 @@ const blsModeValue = JSON.parse(localStorage.settings).bls_mode;
 
 //new error handler
 checkValidSelect(targetingCategories);
-checkValidSelect(languageInput);
-blsModeValue ? "" : checkValidSelect(countryInput);
+blsModeValue ? checkValidSelect(languageInput) : "";
+// blsModeValue ? "" : checkValidSelect(countryInput);
 blsModeValue ? "" : checkValidSelect(numberOfQuestionsSelect);
 blsModeValue ? checkValidSelect(timesReviewedSelect) : "";
 blsModeValue || targetingDropdown.hasAttribute('disabled') 
     ? "" 
     : checkValidSelect(targetingDropdown);
 
+console.log('language', languageInput.dataset.langcode, languageInput.dataset.langcode == undefined)
+
 let caseData = {
     queue: queueSelect.options[queueSelect.selectedIndex].value,
     violations: categoryString,
     country: countryInput.value,
-    language: languageInput.dataset.langcode,
+    language: languageInput.dataset.langcode != undefined ? languageInput.dataset.langcode : '',
     RMTO: rmto.checked? "yes" : "no",
     surveyType: targetingCategories.value,
     targeting: targetingDropdown.value,
@@ -5650,7 +5655,7 @@ function clearClass(){
   // queueSelect.parentElement.classList.remove('s12');
   customerTypeSelect.parentElement.classList.remove('hide');
   //surveyStatusSelect.parentElement.classList.remove('hide');
-  languageInput.parentElement.classList.remove('hide');
+//   languageInput.parentElement.classList.remove('hide');
   toggleDecisionBtn();
   
 }
@@ -5857,7 +5862,7 @@ function getCaseData(){
         return 'Cases 2.0'
     };
     
-    console.log('categories', identifyCase(assigned.survey_ids.toString()))
+    console.log('language', assigned.language)
     
     let reviewStatus = `reviewed`,
         referenceID = ``,
@@ -5865,7 +5870,7 @@ function getCaseData(){
         queueType = `${assigned.queue}`,
         customerType = ``,
         tool = `${identifyCase(assigned.survey_ids.toString())}`,
-        language = `${assigned.language}`,
+        language = `${assigned.language != 'undefined' ? assigned.language : ""}`,
         country = `${assigned.country}`,
         RMTO = `${assigned.RMTO}`,
         surveyType = `${assigned.surveyType}`,
