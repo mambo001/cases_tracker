@@ -2423,8 +2423,8 @@ function addQMModal(){
        let isMaxScrapeInstance = 0
        
        const { previousData } = window.QMObserver
-       const timeToscrapeArray = [5,6,7,8,9,10,35,36,37,38,50]
-       const timeToResetFlagArray = [4,34]
+       const timeToscrapeArray = [5,6,15,16,25,26,35,36,45,46,55,56]
+       const timeToResetFlagArray = [4,14,24,34,44,54]
        
     //   window.QMObserver.isSubmitted = true
        clearInterval(window.QMObserver.superCheckerIntervalID)
