@@ -2475,7 +2475,7 @@ function addQMModal(){
        }
 
        const superChecker = setInterval(() => {
-           isTimeToScrape = timeChecker(timeToscrapeArray)
+           isTimeToScrape = timeChecker(timeToScrapeArray)
            isTimeToResetSubmittedFlag = timeChecker(timeToResetFlagArray)
            isDataChanged = dataChangedChecker(previousData, QMScrapedArray)
         //   isMaxScrapeInstance = scrapeInstanceChecker(window.QMObserver.redbullCasesCount)
@@ -2505,8 +2505,7 @@ function addQMModal(){
                    console.log("filteredArray",filteredQMScrapedArray.length)
                    console.log("Global isSubmitted", window.QMObserver.isSubmitted)
                    if (filteredQMScrapedArray.length && window.QMObserver.isSubmitted == false) {
-                    //    commented for testing
-                    //    doSubmitQM(filteredQMScrapedArray)
+                       doSubmitQM(filteredQMScrapedArray)
                    }
                    
                 //   window.QMObserver.isSubmitted ? console.log('isSubmitted', window.QMObserver.isSubmitted)
