@@ -2051,7 +2051,8 @@ function addQMModal(){
   // </ul>
     modal.innerHTML = `
     <div class="m-modal-content">
-    <small id="QMVersionText">Beta Version 1.0</small>
+    <small id="QMVersionText" style="margin: 0px 5px">Beta Version 1.2</small>
+    <small id="QMScrapeIntervalArrayText" style="margin: 0px 5px">Next scraping <span>[]</span></small>
         <div class="row" style="">
           <div class="col s12 m4">
             <div class="card">
@@ -2085,20 +2086,26 @@ function addQMModal(){
                       <h4 style="margin-top: 12px;">Scrape Configurations</h4>
                       <div class="row">
                           <div class="input-field col s12">
-                            <label for="QMQueryToScrape" class="active">Query</label>
-                            <input id="QMQueryToScrape" type="text" class="validate" placeholder="assignee:johndoe" value="" required>
+                            <label for="QMScrapeIntervalInput" class="active">Scrape Minute Interval</label>
+                            <input id="QMScrapeIntervalInput" type="number" class="validate" min="0" max="60" placeholder="10" 
+                                value=${
+                                    localStorage.QMScrapeInterval != undefined && localStorage.QMScrapeInterval > 0 
+                                    ? localStorage.QMScrapeInterval 
+                                    : ''
+                                } 
+                                required>
                           </div>
-                          <div class="input-field col s12">
+                          <div class="input-field col s12 hide">
                             <label for="QMLDAPToScrape" class="active">LDAP</label>
                             <input id="QMLDAPToScrape" type="text" class="validate" placeholder="10" value="me" required>
                           </div>
                       
-                          <div class="input-field col s12 m12 l6">
+                          <div class="input-field col s12 m12 l6 hide">
                             <label for="scrapeStartDate" class="active">Start Date</label>
                             <input type="text" id="QMScrapeStartDate" class="datepicker">
                           </div>
                           
-                          <div class="input-field col s12 m12 l6">
+                          <div class="input-field col s12 m12 l6 hide">
                               <label for="QMScrapeEndDate" class="active">End Date</label>
                               <input type="text" id="QMScrapeEndDate" class="datepicker">
                           </div>
@@ -2182,8 +2189,9 @@ function addQMModal(){
   // IDs //
   const QMModal = document.querySelector('#QMModal'),
       QMVersionText = document.querySelector('#QMVersionText'),
+      QMScrapeIntervalArrayText = document.querySelector('#QMScrapeIntervalArrayText'),
       QMScrapeStat = document.querySelector('#QMScrapeStat'),
-      QMQueryToScrape = document.querySelector('#QMQueryToScrape'),
+      QMScrapeIntervalInput = document.querySelector('#QMScrapeIntervalInput'),
       QMElevatedInput = document.querySelector('#QMElevatedInput'),
       QMLDAPToScrape = document.querySelector('#QMLDAPToScrape'),
       QMScrapeStartDate = document.querySelector('#QMScrapeStartDate'),
@@ -2421,13 +2429,37 @@ function addQMModal(){
        let isSubmitted = false
        let isDataChanged
        let isMaxScrapeInstance = 0
-       
+       let timeToScrapeArray
+       let timeToResetFlagArray
+       const LS_QMScrapeInterval = localStorage.QMScrapeInterval;
        const { previousData } = window.QMObserver
-       const timeToscrapeArray = [5,6,15,16,25,26,35,36,45,46,55,56]
-       const timeToResetFlagArray = [4,14,24,34,44,54]
+       const defaultTimeScrapingInterval = [5,6,15,16,25,26,35,36,45,46,55,56]
+       const defaultTimeToResetFlagArray = [4,14,24,34,44,54]
        
     //   window.QMObserver.isSubmitted = true
        clearInterval(window.QMObserver.superCheckerIntervalID)
+
+       const generateIntervalArray = (start, stop, step=1) => {
+            if(step === 0) throw new Error("range() arg 3 must not be zero");
+        
+            const noStart = stop == null;
+            stop = noStart ? start : stop;
+            start = noStart ? 0 : start;
+            const length = Math.ceil(((stop - start) / step));
+        
+            return Array.from({length}, (_, i) => (i * step) + start);
+        }
+
+       timeToScrapeArray = LS_QMScrapeInterval != undefined && LS_QMScrapeInterval > 0 
+        ? generateIntervalArray(5, 60, LS_QMScrapeInterval) 
+        : defaultTimeScrapingInterval;
+        
+       timeToResetFlagArray = LS_QMScrapeInterval != undefined && LS_QMScrapeInterval > 0 
+       ?  timeToScrapeArray.map(n => n-1)
+       : defaultTimeToResetFlagArray;
+       
+       QMScrapeIntervalArrayText.querySelector('span').textContent = timeToScrapeArray.toString();
+       console.log({timeToScrapeArray}, {timeToResetFlagArray})
            
        const timeChecker = (timesToCheckArray) => {
             let currentMinute = new Date().getMinutes()
@@ -2473,7 +2505,8 @@ function addQMModal(){
                    console.log("filteredArray",filteredQMScrapedArray.length)
                    console.log("Global isSubmitted", window.QMObserver.isSubmitted)
                    if (filteredQMScrapedArray.length && window.QMObserver.isSubmitted == false) {
-                       doSubmitQM(filteredQMScrapedArray)
+                    //    commented for testing
+                    //    doSubmitQM(filteredQMScrapedArray)
                    }
                    
                 //   window.QMObserver.isSubmitted ? console.log('isSubmitted', window.QMObserver.isSubmitted)
@@ -2855,6 +2888,32 @@ versionText.addEventListener('dblclick', (e) => {
     elevatedInput.classList.remove('hide');
     e.target.classList.add('m-elevated');
 });
+
+QMVersionText.addEventListener('dblclick', (e) => {
+    const QMElevatedInput = document.querySelector('#QMElevatedInput');
+    QMElevatedInput.classList.remove('hide');
+    e.target.classList.add('m-elevated');
+});
+
+QMScrapeIntervalInput.addEventListener('input', (e) => {
+    let { 'value':scrapeIntervalValue } = e.currentTarget;
+    if (scrapeIntervalValue && scrapeIntervalValue > 0) {
+        setTimeout(() => {
+            this.localStorage.setItem('QMScrapeInterval', scrapeIntervalValue)
+            console.log(localStorage.QMScrapeInterval)
+            Toast.fire({
+                icon: 'success',
+                title: `Successfully changed to ${scrapeIntervalValue}`
+            })
+        }, 450);
+    } else {
+        this.localStorage.setItem('QMScrapeInterval', null)
+        let input = e.currentTarget;
+        input.className = 'validate';
+        input.classList.toggle('invalid', true)
+    }
+    
+})
 
 
 // Custom Scraper
