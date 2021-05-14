@@ -2234,8 +2234,12 @@ function addQMModal(){
           },
           data => {
               if (data.response != "error"){
-                QMData.QMPrio = data.records;
-                const caseCount = data.records;
+                let { records } = data;
+                records = records.filter(({LDAP}) => LDAP != "");
+                console.log({records})
+                
+                QMData.QMPrio = records;
+                const caseCount = records;
                 caseCount.sort((a, b) => a["MTD"] - b["MTD"]);
                 const trElement = caseCount.map((tr) => {
                     return `<tr id="${tr.LDAP}" class="${tr.Status == 'SKIP' ? 'hide' : ''}">
