@@ -2205,7 +2205,8 @@ function addQMModal(){
       
   
   let loadPageTimeout,
-      QMScrapedArray = [];
+      QMScrapedArray = [],
+      QMUnprocessedCasesArray = [];
       
   const REDBULL_QUERY_URL = `https://cases.connect.corp.google.com/#/queues/bookmark/(state%3Anew%20OR%20state%3Aunassigned%20OR%20state%3Aassigned)%20-(neoenum.opening_channel%3Aphone%20-neoenum.request%3Aincoming_voicemail%20state%3Anew)%20(-has%3Achat%20OR%20is%3Arealtime_ended)%20-(Discard%3ASPAM%20OR%20Discard%3AABANDONED%20OR%20Discard%3AOTHER)%20sort%3Aresolutiontarget%2Ccreated%2Clast_out_comm%2Ccaseid%20(pool%3A%204187%20OR%20pool%3A%205941%20OR%20pool%3A5690)`;
   
@@ -2272,32 +2273,60 @@ function addQMModal(){
               if (data.response != "error"){
                   // console.log(data);
                   let casesArray = data.records;
+                  let { records } = data;
                   
                 //   console.log(casesArray)
                   
                   let finalCasesArray = casesArray.map((caseInstance) => {
                       const {
                           'Case ID': caseID,
+                          'Study ID': studyID,
                           'Status': caseStatus,
                           'Time Assigned': caseTimeAssigned,
-                          'Assigned To': assignedToLDAP
+                          'Assigned To': assignedToLDAP,
+                          'Remarks': caseRemarks
                           
                       } = caseInstance;
                       
                       return {
                           assignedToLDAP,
-                          value: [{
+                          value: {
                               caseID,
+                              studyID,
                               caseStatus,
-                              caseTimeAssigned
-                          }]
+                              caseTimeAssigned,
+                              caseRemarks
+                          }
                       }
                   });
                   
-                  let output = finalCasesArray.filter(item => {
-                      return item.value[0].caseStatus != "Completed";
+                  const output = finalCasesArray.filter(item => {
+                      return item.value.caseStatus != "Completed";
                   })
-                  
+
+
+                  // Get unprocessed cases and not duplicate
+                //   const assignedSPRCases = finalCasesArray.filter(({value}) => {
+                //       let { studyID, caseID, caseStatus, caseRemarks } = value;
+                //       if (caseStatus !== "Completed" && caseRemarks !== "Duplicate")
+                //       return value
+                //   });
+
+                  const assignedSPRCIDArray = records.filter(
+                    ({
+                        'Case ID': caseID,
+                        'Status': caseStatus,
+                        'Remarks': caseRemarks
+                    }) => {
+                        if (caseStatus !== "Completed" && caseRemarks !== "Duplicate")
+                        return caseID
+                    }).map(({ 'Case ID':caseID }) => caseID);
+
+                    assignedSPRCIDArray.length 
+                    ? QMUnprocessedCasesArray = assignedSPRCIDArray 
+                    : console.log('No SPR Unprocessed Cases: ', QMUnprocessedCasesArray);
+                    
+                    console.log({QMUnprocessedCasesArray})
                 // Refactor to not write in DOM
                 // Updates Prio Value
                 //   if (output.length){
@@ -2318,7 +2347,7 @@ function addQMModal(){
                 //       });
                 //   }
                   
-                  console.table("Ongoing Cases: ",output);
+                  console.table("Ongoing Cases: ", assignedSPRCIDArray);
                   
               } else {
                 console.log('Error:', data.response);
@@ -2328,12 +2357,27 @@ function addQMModal(){
 
       let doAssignCases = () => {
           // TODO
+          // Refactor:
+          // -add validation from duplicate detection data
+          // -"hanging cases" detection
           let rows = Array.from(document.querySelectorAll('#QMScrapedTbody tr'))
-          let filteredRowsElement = rows.map(e => {
-              return [e.querySelector('td:nth-child(2)'),e.querySelector('td:nth-child(3)'),e.querySelector('td:nth-child(7)')]
-          });
-          filteredRowsElement = filteredRowsElement.filter(e => e[2].textContent == "New")
-          let filteredQMScrapedArray = QMScrapedArray.filter(e => e.caseStatus == "New")
+          let filteredRowsElement = rows
+            .filter(({ className }) => !QMUnprocessedCasesArray.includes(className))
+            .map(e => {
+                return [e.querySelector('td:nth-child(2)'),e.querySelector('td:nth-child(3)'),e.querySelector('td:nth-child(7)')]
+            })
+            .filter(e => e[2].textContent == "New");
+           console.log({filteredRowsElement}) 
+
+          let filteredQMScrapedArray = QMScrapedArray
+            .filter(e => e.caseStatus == "New")
+            .filter(({ caseID }) => !QMUnprocessedCasesArray.includes(caseID));
+
+        console.log(
+            {filteredQMScrapedArray},
+            {QMScrapedArray},
+            {QMUnprocessedCasesArray}
+        )
           
           let filteredLDAP = QMData.QMPrio.filter(e => e.Status == 'AVAIL' || e.Status == 'CASES');
           let prioLDAP = [
@@ -2356,43 +2400,47 @@ function addQMModal(){
                   filteredLDAP
               ].flat()
           console.log("Prio LDAPs: ",filteredLDAP)
-          filteredQMScrapedArray.forEach((scrapedCase, i) => {
-              let [TDARAssignTime, TDAssignedToLDAP, TDCaseStatus] = filteredRowsElement[i];
-              
-              if (TDCaseStatus.textContent == "New"){
-                  // Modify QMScrapedArray data
-                  scrapedCase.ARAssignTime = new Date().toLocaleTimeString();
-                  scrapedCase.assignedToLDAP = prioLDAP[i].LDAP;
-                  
-                  // Modify table data
-                  TDARAssignTime.textContent = scrapedCase.ARAssignTime;
-                  TDAssignedToLDAP.textContent = scrapedCase.assignedToLDAP;
-              }
 
-          });
+          if (!filteredQMScrapedArray.length) {
+            Toast.fire({
+                icon: 'info',
+                title: `All cases are already assigned in SPR.`
+            })
+          } else {
+            const iterationStart = QMUnprocessedCasesArray.length ? QMUnprocessedCasesArray.length : 0;
+            filteredQMScrapedArray.forEach((scrapedCase, i) => {
+                let [TDARAssignTime, TDAssignedToLDAP, TDCaseStatus] = filteredRowsElement[i]; //element starts assigning in filtered element, 1st element, 0 based index
+                
+                if (TDCaseStatus.textContent == "New"){
+                    // Modify QMScrapedArray data
+                    scrapedCase.ARAssignTime = new Date().toLocaleTimeString();
+                    scrapedCase.assignedToLDAP = prioLDAP[i].LDAP;
+                    
+                    // Modify table data
+                    TDARAssignTime.textContent = scrapedCase.ARAssignTime;
+                    TDAssignedToLDAP.textContent = scrapedCase.assignedToLDAP;
+                }
+  
+            });
+          }
+          
       };
       
       // Page loader
       loadPageTimeout = setTimeout(() => {
-          //Generate Sample CASES
-        //   testRenderSampleCases()
-          
-          
           // Do scraping when loaded
           let caseRow = document.querySelector('comfy-case-row');
-            resultBody = caseRow ? caseRow.parentElement : "";
-          
-
+          let resultBody = caseRow ? caseRow.parentElement : "";
             
           setTimeout(() => scrollToBottom(resultBody), 2000);
-          setTimeout(() => scrollToBottom(resultBody), 3000);
-          setTimeout(() => scrollToBottom(resultBody), 4000);
+          setTimeout(() => scrollToBottom(resultBody), 3500);
+          setTimeout(() => scrollToBottom(resultBody), 5000);
           
           setTimeout(() => {
               getCases(QMScrapedTbody);
               doInitLoad(QMModal);
                   doAssignCases();
-          }, 4500);
+          }, 5500);
           
       }
       ,2000
@@ -2404,6 +2452,7 @@ function addQMModal(){
   }
   
   QMAssignCasesBtn.addEventListener('click', (e) => {
+    doScrape();
       // let rows = Array.from(document.querySelectorAll('#QMScrapedTbody tr'))
       // let filteredRows = rows.map(e => {
       //     return [e.querySelector('td:nth-child(2)'),e.querySelector('td:nth-child(3)')]
@@ -2573,40 +2622,7 @@ function addQMModal(){
                 console.log('Error:', data.response);
               }
           }
-      );
-      
-      
-      // let recurringScrape = setInterval(() => {
-      //     doScrape();
-          
-      //     chrome.runtime.sendMessage(
-      //         {
-      //             contentScriptQuery: 'QMPrioDumpQuery'
-      //         },
-      //         data => {
-      //             if (data.response != "error"){
-      //               console.log(data);
-      //               QMData.QMPrio = data.records;
-                    
-      //               const caseCount = data.records;
-      //               caseCount.sort((a, b) => a.MTD - b.MTD);
-      //               const trElement = caseCount.map((tr) => {
-      //                   return `<tr class="${tr.Status == 'SKIP' ? 'hide' : ''}">
-      //                       <td>${tr.LDAP}</td>
-      //                       <td>${tr.MTD}</td>
-      //                       <td class="${tr.Status == 'AVAIL' ? 'green lighten-4' : ''}">${tr.Status}</td>
-      //                       <td>${tr.ActiveCases || 0}</td>
-      //                   </tr>`;
-      //               });
-      //               QMScrapeStat.innerHTML = trElement.join('');
-      //             } else {
-      //               console.log('Error:', data.response);
-      //             }
-      //         }
-      //     );
-          
-      // }, 15000);
-      
+      );      
   });
   
   function doInitLoad(parentModal){
@@ -3125,6 +3141,7 @@ function appendDataToTable(tbody,data){
             missingStudyID.textContent = data.filter(c => c.caseRemarks === "STUDY_ID_NOT_FOUND").length;
             scrapedCasesSpan.textContent = data.length;
             newTR.setAttribute(`id`, `${c.studyID}`);
+            newTR.setAttribute(`class`, `${c.caseID}`);
             
             //Check if Table is QM or Scraper
             if (tbody.id === "trackedMV"){
