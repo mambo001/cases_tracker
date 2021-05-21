@@ -3,7 +3,7 @@
     "manifest_version": 2,
     "name": "Cases Tracker",
     "description": "Chrome Extension to track cases.",
-    "version": "5.0.2",
+    "version": "5.0.3",
     "icons": {"128": "images/icon_128.png"},
     "browser_action": {
         "default_icon": "images/icon.png",
